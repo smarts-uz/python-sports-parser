@@ -28,7 +28,6 @@ class UserMatch(models.Model):
 
 
 class Action(models.Model):
-    id = models.AutoField()
     position = models.TextField(blank=True, null=True)  # This field type is a guess.
     type = models.TextField(blank=True, null=True)  # This field type is a guess.
     point = models.SmallIntegerField(blank=True, null=True)
@@ -45,10 +44,9 @@ class Action(models.Model):
 
 
 class Card(models.Model):
-    id = models.AutoField()
-    player_id = models.IntegerField(blank=True, null=True)
+    player = models.ForeignKey('MatchPlayer', models.DO_NOTHING, blank=True, null=True)
     card_type = models.CharField(max_length=10, blank=True, null=True)
-    match_id = models.IntegerField(blank=True, null=True)
+    match = models.ForeignKey('Match', models.DO_NOTHING, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
     updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
@@ -65,7 +63,7 @@ class Card(models.Model):
 class Club(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     flag_url = models.CharField(max_length=255, blank=True, null=True)
-    country = models.ForeignKey('Country', models.DO_NOTHING)
+    country = models.ForeignKey('Country', models.DO_NOTHING, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
     updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
     deleted_at = models.DateTimeField(blank=True, null=True, db_comment='9|82')
@@ -141,9 +139,8 @@ class Country(models.Model):
 
 
 class Goal(models.Model):
-    id = models.AutoField()
-    player_id = models.IntegerField(blank=True, null=True)
-    match_id = models.IntegerField(blank=True, null=True)
+    player = models.ForeignKey('MatchPlayer', models.DO_NOTHING, blank=True, null=True)
+    match = models.ForeignKey('Match', models.DO_NOTHING, blank=True, null=True)
     is_own_goal = models.SmallIntegerField(blank=True, null=True)
     time = models.CharField(max_length=10, blank=True, null=True)
     is_penalty = models.SmallIntegerField(blank=True, null=True)
@@ -206,14 +203,13 @@ class MatchPlayer(models.Model):
 
 
 class MatchResult(models.Model):
-    id = models.AutoField()
-    player_id = models.IntegerField(blank=True, null=True)
-    club_id = models.IntegerField(blank=True, null=True)
-    match_id = models.IntegerField(blank=True, null=True)
+    player = models.ForeignKey('Player', models.DO_NOTHING, blank=True, null=True)
+    club = models.ForeignKey(Club, models.DO_NOTHING, blank=True, null=True)
+    match = models.ForeignKey(Match, models.DO_NOTHING, blank=True, null=True)
     count = models.SmallIntegerField(blank=True, null=True, db_comment='in luneup?')
     point = models.IntegerField(blank=True, null=True)
     action = models.TextField(blank=True, null=True)  # This field type is a guess.
-    tour_id = models.IntegerField(blank=True, null=True)
+    tour = models.ForeignKey('Tour', models.DO_NOTHING, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
     updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
@@ -249,12 +245,11 @@ class Player(models.Model):
 
 
 class PlayerPoint(models.Model):
-    id = models.AutoField()
-    player_id = models.IntegerField(blank=True, null=True)
-    club_id = models.IntegerField(blank=True, null=True)
-    competition_id = models.IntegerField(blank=True, null=True)
-    match_id = models.IntegerField(blank=True, null=True)
-    tour_id = models.IntegerField(blank=True, null=True)
+    player = models.ForeignKey(Player, models.DO_NOTHING, blank=True, null=True)
+    club = models.ForeignKey(Club, models.DO_NOTHING, blank=True, null=True)
+    competition = models.ForeignKey(Competition, models.DO_NOTHING, blank=True, null=True)
+    match = models.ForeignKey(Match, models.DO_NOTHING, blank=True, null=True)
+    tour = models.ForeignKey('Tour', models.DO_NOTHING, blank=True, null=True)
     point = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
@@ -270,21 +265,20 @@ class PlayerPoint(models.Model):
 
 
 class PlayerResult(models.Model):
-    id = models.AutoField()
-    player_id = models.IntegerField(blank=True, null=True)
-    club_id = models.IntegerField(blank=True, null=True)
+    player = models.ForeignKey(Player, models.DO_NOTHING, blank=True, null=True)
+    club = models.ForeignKey(Club, models.DO_NOTHING, blank=True, null=True)
     goal = models.IntegerField(blank=True, null=True)
     played_min = models.SmallIntegerField(blank=True, null=True)
     position = models.TextField(blank=True, null=True)  # This field type is a guess.
-    competition_id = models.IntegerField(blank=True, null=True)
-    match_id = models.IntegerField(blank=True, null=True)
+    competition = models.ForeignKey(Competition, models.DO_NOTHING, blank=True, null=True)
+    match = models.ForeignKey(Match, models.DO_NOTHING, blank=True, null=True)
     missed_penalty = models.SmallIntegerField(blank=True, null=True)
     goal_asist = models.SmallIntegerField(blank=True, null=True)
     shutout = models.SmallIntegerField(blank=True, null=True)
     every_2_missed_goals = models.SmallIntegerField(blank=True, null=True)
     yellow_card = models.SmallIntegerField(blank=True, null=True)
     red_card = models.SmallIntegerField(blank=True, null=True)
-    tour_id = models.IntegerField(blank=True, null=True)
+    tour = models.ForeignKey('Tour', models.DO_NOTHING, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
     updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
@@ -315,7 +309,7 @@ class Season(models.Model):
 
 
 class SystemConfig(models.Model):
-    id = models.BigAutoField(db_comment='1|41')
+    id = models.BigAutoField(primary_key=True, db_comment='1|41')
     key = models.TextField(db_comment='2|82')  # This field type is a guess.
     value = models.TextField(blank=True, null=True, db_comment='3|164')
     type = models.TextField(blank=True, null=True, db_comment='4|82')  # This field type is a guess.
@@ -324,9 +318,9 @@ class SystemConfig(models.Model):
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
     updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
     deleted_at = models.DateTimeField(blank=True, null=True, db_comment='9|82')
-    created_by = models.IntegerField(blank=True, null=True, db_comment='10|41')
-    updated_by = models.IntegerField(blank=True, null=True, db_comment='11|41')
-    deleted_by = models.IntegerField(blank=True, null=True, db_comment='12|41')
+    created_by = models.ForeignKey('User', models.DO_NOTHING, db_column='created_by', blank=True, null=True, db_comment='10|41')
+    updated_by = models.ForeignKey('User', models.DO_NOTHING, db_column='updated_by', related_name='systemconfig_updated_by_set', blank=True, null=True, db_comment='11|41')
+    deleted_by = models.ForeignKey('User', models.DO_NOTHING, db_column='deleted_by', related_name='systemconfig_deleted_by_set', blank=True, null=True, db_comment='12|41')
     name = models.CharField(max_length=255, blank=True, null=True, db_comment='13|82')
 
     class Meta:
@@ -336,7 +330,6 @@ class SystemConfig(models.Model):
 
 
 class SystemLanguage(models.Model):
-    id = models.AutoField(db_comment='ID')
     name = models.CharField(max_length=255, blank=True, null=True, db_comment='Nomi')
     uz = models.TextField(blank=True, null=True, db_comment='Manzili')
     ru = models.TextField(blank=True, null=True)
@@ -354,8 +347,7 @@ class SystemLanguage(models.Model):
 
 
 class SystemNotification(models.Model):
-    id = models.AutoField()
-    company_id = models.IntegerField(blank=True, null=True)
+    company = models.ForeignKey(Company, models.DO_NOTHING, blank=True, null=True)
     title = models.CharField(max_length=255)
     data = models.TextField()
     type = models.TextField(blank=True, null=True)  # This field type is a guess.
@@ -364,9 +356,9 @@ class SystemNotification(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
-    created_by = models.IntegerField(blank=True, null=True)
-    updated_by = models.IntegerField(blank=True, null=True)
-    deleted_by = models.IntegerField(blank=True, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, db_column='created_by', blank=True, null=True)
+    updated_by = models.ForeignKey('User', models.DO_NOTHING, db_column='updated_by', related_name='systemnotification_updated_by_set', blank=True, null=True)
+    deleted_by = models.ForeignKey('User', models.DO_NOTHING, db_column='deleted_by', related_name='systemnotification_deleted_by_set', blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -375,7 +367,6 @@ class SystemNotification(models.Model):
 
 
 class SystemTable(models.Model):
-    id = models.AutoField()
     name = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(blank=True, null=True)
     t_tables = models.TextField(blank=True, null=True)  # This field type is a guess.
@@ -385,9 +376,9 @@ class SystemTable(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
-    created_by = models.IntegerField(blank=True, null=True)
-    updated_by = models.IntegerField(blank=True, null=True)
-    deleted_by = models.IntegerField(blank=True, null=True)
+    created_by = models.ForeignKey('User', models.DO_NOTHING, db_column='created_by', blank=True, null=True)
+    updated_by = models.ForeignKey('User', models.DO_NOTHING, db_column='updated_by', related_name='systemtable_updated_by_set', blank=True, null=True)
+    deleted_by = models.ForeignKey('User', models.DO_NOTHING, db_column='deleted_by', related_name='systemtable_deleted_by_set', blank=True, null=True)
     deny_read = models.BooleanField(blank=True, null=True)
     deny_edit = models.BooleanField(blank=True, null=True)
     deny_create = models.BooleanField(blank=True, null=True)
@@ -422,9 +413,8 @@ class Team(models.Model):
 
 
 class TeamBalance(models.Model):
-    id = models.AutoField()
     balance = models.IntegerField(blank=True, null=True)
-    team_id = models.IntegerField()
+    team = models.ForeignKey(Team, models.DO_NOTHING)
     name = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
     updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
@@ -439,9 +429,8 @@ class TeamBalance(models.Model):
 
 
 class TeamFormation(models.Model):
-    id = models.AutoField()
     formation_id = models.IntegerField(blank=True, null=True, db_comment=' ex: 4x3x3')
-    team_id = models.IntegerField(blank=True, null=True)
+    team = models.ForeignKey(Team, models.DO_NOTHING, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
     updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
@@ -456,15 +445,14 @@ class TeamFormation(models.Model):
 
 
 class TeamPlayer(models.Model):
-    id = models.AutoField()
-    player_id = models.IntegerField(blank=True, null=True)
+    player = models.ForeignKey(Player, models.DO_NOTHING, blank=True, null=True)
     is_lineup11 = models.SmallIntegerField(blank=True, null=True)
     order_number = models.SmallIntegerField(blank=True, null=True, db_comment='in which position is set?')
     is_captain = models.BooleanField(blank=True, null=True)
-    team_id = models.IntegerField(blank=True, null=True)
+    team = models.ForeignKey(Team, models.DO_NOTHING, blank=True, null=True)
     position = models.TextField(blank=True, null=True)  # This field type is a guess.
     sold = models.BooleanField(blank=True, null=True)
-    club_id = models.IntegerField(blank=True, null=True)
+    club = models.ForeignKey(Club, models.DO_NOTHING, blank=True, null=True)
     point = models.IntegerField(blank=True, null=True)
     sold_date = models.DateTimeField(blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
@@ -481,10 +469,9 @@ class TeamPlayer(models.Model):
 
 
 class TeamPoint(models.Model):
-    id = models.AutoField()
-    team_id = models.IntegerField(blank=True, null=True)
-    user_id = models.IntegerField(blank=True, null=True)
-    tour_id = models.IntegerField(blank=True, null=True)
+    team = models.ForeignKey(Team, models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    tour = models.ForeignKey('Tour', models.DO_NOTHING, blank=True, null=True)
     point = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
@@ -529,7 +516,7 @@ class User(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     created_by = models.ForeignKey('self', models.DO_NOTHING, db_column='created_by', blank=True, null=True)
-    updated_by = models.ForeignKey('self', models.DO_NOTHING, db_column='updated_by', related_name='user_updated_by_set', blank=True, null=True)
+    updated_by = models.IntegerField(blank=True, null=True)
     deleted_by = models.ForeignKey('self', models.DO_NOTHING, db_column='deleted_by', related_name='user_deleted_by_set', blank=True, null=True)
     photo = models.TextField(blank=True, null=True)
     is_super_admin = models.BooleanField(blank=True, null=True)
@@ -550,7 +537,6 @@ class User(models.Model):
 
 
 class UserActivity(models.Model):
-    id = models.AutoField()
     user_id = models.IntegerField(blank=True, null=True)
     activity = models.TextField(blank=True, null=True)
     team_id = models.IntegerField(blank=True, null=True)
@@ -568,7 +554,6 @@ class UserActivity(models.Model):
 
 
 class UserPayment(models.Model):
-    id = models.AutoField()
     user_id = models.IntegerField()
     in_amount = models.IntegerField(blank=True, null=True)
     added_balance = models.IntegerField(blank=True, null=True)
@@ -587,7 +572,6 @@ class UserPayment(models.Model):
 
 
 class UserPlayer(models.Model):
-    id = models.AutoField()
     player_id = models.IntegerField(blank=True, null=True)
     user_match_id = models.IntegerField(blank=True, null=True)
     is_lineup_11 = models.SmallIntegerField(blank=True, null=True, db_comment='in luneup?')
@@ -607,7 +591,6 @@ class UserPlayer(models.Model):
 
 
 class UserTransfer(models.Model):
-    id = models.AutoField()
     team_id = models.IntegerField(blank=True, null=True)
     player_id = models.IntegerField(blank=True, null=True)
     amount = models.IntegerField(blank=True, null=True)

@@ -22,5 +22,17 @@ from db.models import *
 ############################################################################
 """ Replace the code below with your own """
 
+
 # Seed a few users in the database
-print(Club.objects.all)
+# pl = Player.objects.get(id=6)
+# pl.name = 'SportsruTEst'
+# pl.save()
+# print(pl.name)
+
+
+# a = Player.objects.all().order_by('id')
+# for player in a:
+#     print(player.name)
+
+
+

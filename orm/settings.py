@@ -45,4 +45,5 @@ DATABASES = {
 }
 """
 
-INSTALLED_APPS = ("db",)
+INSTALLED_APPS = ("orm.db",)
+# INSTALLED_APPS = ("db",)
