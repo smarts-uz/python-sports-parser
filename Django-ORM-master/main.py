@@ -23,4 +23,4 @@ from db.models import *
 """ Replace the code below with your own """
 
 # Seed a few users in the database
-print(Club.objects.get(id=1))
+print(Club.objects.all)
