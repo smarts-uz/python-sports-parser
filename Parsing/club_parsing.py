@@ -24,8 +24,9 @@ table_row = table_body.find_all('tr')
 i= 0
 for row in table_row:
     name = row.find('a',class_="name")['title']
-    name =  GoogleTranslator(source='auto', target='en').translate(name)
+    name = GoogleTranslator(source='auto', target='en').translate(name)
     club_link = row.find('a',class_="name")['href']
+    print(name," ",club_link)
     club_response = requests.get(club_link)
     club_soup = BeautifulSoup(club_response.content, 'html.parser')
     club_logo_box = club_soup.find('div',class_="img-box")
@@ -33,7 +34,7 @@ for row in table_row:
     type = club_logo.split('.')[-1]
     logo_response = requests.get(club_logo).content
     print(f'{name}.{type}')
-    with  open(f'C:/Users/Administrator/Desktop/Work/Python/Parsing/python-sports-parser/logo/{name}.{type}', 'wb') as f:
+    with open(f'D:/Test/Sports parser/Club/{name}.{type}', 'wb') as f:
         f.write(logo_response)
     print(f'{name} Saved photo! ')
 
