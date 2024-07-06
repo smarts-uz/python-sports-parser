@@ -26,7 +26,6 @@ for club in a:
 
 
 
-
     def get_position_code(player_position):
         switcher = {
             'вратарь': 'GOA',
