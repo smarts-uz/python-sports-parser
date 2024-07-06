@@ -9,7 +9,6 @@ django.setup()
 
 # Import your models for use in your script
 from orm.db.models import Club
-
 import requests
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
