@@ -23,6 +23,7 @@ table_row = table_body.find_all('tr')
 i= 0
 for row in table_row:
     name = row.find('a',class_="name")['title']
+    name_ru = row.find('a', class_="name")['title']
     name = GoogleTranslator(source='auto', target='en').translate(name)
     club_link = row.find('a',class_="name")['href']
     print(name," ",club_link)
@@ -41,7 +42,7 @@ for row in table_row:
         Club.objects.get(name=name)
         print('Already Exists: ',name)
     except Club.DoesNotExist as e:
-        Club.objects.create(name=name,flag_url=club_logo)
+        Club.objects.create(name=name,flag_url=club_logo,name_ru=name_ru)
         i+=1
         print(i,'created: ',name)
 
