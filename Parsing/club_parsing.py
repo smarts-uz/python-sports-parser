@@ -20,13 +20,15 @@ soup = BeautifulSoup(response.content, 'html.parser')
 table = soup.find('div',class_='stat mB6')
 table_body = table.find('tbody')
 table_row = table_body.find_all('tr')
-i= 0
+i=0
 for row in table_row:
-    name = row.find('a',class_="name")['title']
+    # name = row.find('a', class_="name")['title']
+    # print(name)
     name_ru = row.find('a', class_="name")['title']
-    name = GoogleTranslator(source='auto', target='en').translate(name)
+    # name = GoogleTranslator(source='auto', target='en').translate(name)
     club_link = row.find('a',class_="name")['href']
-    print(name," ",club_link)
+    name = club_link.split('/')[-2]
+    print(name," ",name_ru," ",club_link)
     club_response = requests.get(club_link)
     club_soup = BeautifulSoup(club_response.content, 'html.parser')
     club_logo_box = club_soup.find('div',class_="img-box")
@@ -34,7 +36,12 @@ for row in table_row:
     type = club_logo.split('.')[-1]
     logo_response = requests.get(club_logo).content
     print(f'{name}.{type}')
-    with open(f'D:/Test/Sports parser/Club/{name}.{type}', 'wb') as f:
+
+    base_path = 'D:/Test/Sports parser/Club'
+    club_path = os.path.join(base_path,name)
+    os.makedirs(club_path, exist_ok=True)
+    logo_path = os.path.join(club_path, f'{name}.{type}')
+    with open(logo_path, 'wb') as f:
         f.write(logo_response)
     print(f'{name} Saved photo! ')
 
@@ -42,10 +49,10 @@ for row in table_row:
         Club.objects.get(name=name)
         print('Already Exists: ',name)
     except Club.DoesNotExist as e:
-        Club.objects.create(name=name,flag_url=club_logo,name_ru=name_ru)
+        Club.objects.create(name=name,flag_url=club_logo,name_ru=name_ru,club_link=club_link)
         i+=1
         print(i,'created: ',name)
-
+    #
 
 
 

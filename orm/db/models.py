@@ -90,6 +90,7 @@ class Club(models.Model):
     updated_by = models.IntegerField(blank=True, null=True, db_comment='11|41')
     deleted_by = models.IntegerField(blank=True, null=True, db_comment='12|41')
     name_ru = models.CharField(max_length=255, blank=True, null=True)
+    club_link = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -239,6 +240,8 @@ class Player(models.Model):
     created_by = models.IntegerField(blank=True, null=True, db_comment='10|41')
     updated_by = models.IntegerField(blank=True, null=True, db_comment='11|41')
     deleted_by = models.IntegerField(blank=True, null=True, db_comment='12|41')
+    name_ru = models.CharField(max_length=255, blank=True, null=True)
+    player_link = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False

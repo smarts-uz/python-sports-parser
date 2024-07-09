@@ -63,6 +63,7 @@ for club in a:
     i = 0
     for row in table_row:
         name = row.find('a').get_text()
+        player_link = row.find('a')['href']
         name_ru = row.find('a').get_text()
         number = row.find('td').get_text(strip=True)
         if not number:
@@ -95,7 +96,13 @@ for club in a:
             continue
 
         type = club_logo.split('.')[-1]
-        logo_path = f'D:/Test/Sports parser/Player/{name}.{type}'
+        base_path = 'D:/Test/Sports parser/Player'
+        club_path = os.path.join(base_path,club.name)
+        player_path = os.path.join(club_path,name)
+        os.makedirs(player_path, exist_ok=True)
+
+        # logo_path = f'D:/Test/Sports parser/Player/{name}.{type}'
+        logo_path = os.path.join(player_path, f'{name}.{type}')
         with open(logo_path, 'wb') as f:
             f.write(logo_response_content)
         print(f'{name} Saved photo! ')
@@ -104,7 +111,7 @@ for club in a:
             Player.objects.get(name=name)
             print('Already Exists: ', name)
         except Player.DoesNotExist:
-            Player.objects.create(name=name, shirt_number=number, club_id=b, position=position_code,name_ru=name_ru)
+            Player.objects.create(name=name, shirt_number=number, club_id=b, position=position_code,name_ru=name_ru,player_link=player_link)
             i += 1
             print(i, 'created: ', name)
 
