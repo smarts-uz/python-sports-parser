@@ -63,6 +63,7 @@ for club in a:
     i = 0
     for row in table_row:
         name = row.find('a').get_text()
+        name_ru = row.find('a').get_text()
         number = row.find('td').get_text(strip=True)
         if not number:
             number = '0'
@@ -103,7 +104,7 @@ for club in a:
             Player.objects.get(name=name)
             print('Already Exists: ', name)
         except Player.DoesNotExist:
-            Player.objects.create(name=name, shirt_number=number, club_id=b, position=position_code)
+            Player.objects.create(name=name, shirt_number=number, club_id=b, position=position_code,name_ru=name_ru)
             i += 1
             print(i, 'created: ', name)
 
