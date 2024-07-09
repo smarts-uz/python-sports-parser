@@ -62,24 +62,27 @@ for club in a:
 
     i = 0
     for row in table_row:
-        name = row.find('a').get_text()
+        # name = row.find('a').get_text()
         player_link = row.find('a')['href']
+
         name_ru = row.find('a').get_text()
         number = row.find('td').get_text(strip=True)
         if not number:
             number = '0'
-
-        name = GoogleTranslator(source='auto', target='en').translate(name)
+        # name = GoogleTranslator(source='auto', target='en').translate(name)
         player_position = row.find_all('td')[-1].get_text(strip=True)
         position_code = get_position_code(player_position)
 
         club_link = row.find('a')['href']
         club_response_content = fetch_content(club_link)
+
         if club_response_content is None:
             print(f"Failed to fetch {club_link} after retries.")
             continue
 
         club_soup = BeautifulSoup(club_response_content, 'html.parser')
+        name = club_soup.find('div',class_="descr").text
+        print(name)
         club_logo_box = club_soup.find('div', class_="img-box")
         if club_logo_box is None:
             print(f"No logo box found for {name}")
@@ -111,7 +114,7 @@ for club in a:
             Player.objects.get(name=name)
             print('Already Exists: ', name)
         except Player.DoesNotExist:
-            Player.objects.create(name=name, shirt_number=number, club_id=b, position=position_code,name_ru=name_ru,player_link=player_link)
+            Player.objects.create(name=name, shirt_number=number,image=logo_path,club_id=b,position=position_code,name_ru=name_ru,player_link=player_link)
             i += 1
             print(i, 'created: ', name)
 
