@@ -3,14 +3,18 @@ sys.dont_write_bytecode = True
 
 # Django specific settings
 import os
+from dotenv import load_dotenv
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
 import django
 django.setup()
 import requests
+load_dotenv()
+base_path = os.getenv('base_path_player')
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from orm.db.models import Player
 from orm.db.models import Club
+from orm.db.models import Competition
 
 def get_position_code(player_position):
     switcher = {
@@ -34,9 +38,12 @@ def fetch_content(url, retries=3, timeout=10):
     return None
 
 a = Club.objects.all()
+competition = Competition.objects.all()
+
 for club in a:
-    url = f'https://www.sports.ru/football/club/{club.name}/team/'
+    url = f'https://www.sports.ru/football/club/{club.slug}/team/'
     b = club.id
+    c = club.country_id
     response_content = fetch_content(url)
     if response_content is None:
         print(f"Failed to fetch {url} after retries.")
@@ -58,10 +65,19 @@ for club in a:
         print(f"No table rows found for {club.name}")
         continue
 
+
+    for com in competition:
+        if c == com.country_id:
+            d = com.id
+            break
+
+
+
     i = 0
     for row in table_row:
         name = row.find('a').get_text()
         player_link = row.find('a')['href']
+        slug = player_link.split('/')[-2]
 
         name_ru = row.find('a').get_text()
         number = row.find('td').get_text(strip=True)
@@ -95,14 +111,15 @@ for club in a:
             print(f"Failed to fetch logo for {name}")
             continue
 
+
+
         type = club_logo.split('.')[-1]
-        base_path = 'D:/Test/Sports parser/Player'
         club_path = os.path.join(base_path,club.name)
         player_path = os.path.join(club_path,name)
         os.makedirs(player_path, exist_ok=True)
 
-        # logo_path = f'D:/Test/Sports parser/Player/{name}.{type}'
         logo_path = os.path.join(player_path, f'{name}.{type}')
+        relative_logo_path = logo_path.split('C:/Users/user/Desktop/Parser/Proliga')[-1].replace('\\', '/')
         with open(logo_path, 'wb') as f:
             f.write(logo_response_content)
         print(f'{name} Saved photo! ')
@@ -111,7 +128,7 @@ for club in a:
             Player.objects.get(name=name)
             print('Already Exists: ', name)
         except Player.DoesNotExist:
-            Player.objects.create(name=name, shirt_number=number,image=logo_path,club_id=b,position=position_code,name_ru=name_ru,player_link=player_link)
+            Player.objects.create(name=name,slug=slug, shirt_number=number,image=relative_logo_path,club_id=b,position=position_code,name_ru=name_ru,player_link=player_link,competition_id=d,native=descr)
             i += 1
             print(i, 'created: ', name)
 
