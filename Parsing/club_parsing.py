@@ -22,15 +22,14 @@ table_body = table.find('tbody')
 table_row = table_body.find_all('tr')
 i=0
 for row in table_row:
-    # name = row.find('a', class_="name")['des']
+    name = row.find('a', class_="name")['des']
     name_ru = row.find('a', class_="name")['title']
-    # name = GoogleTranslator(source='auto', target='en').translate(name)
+    name = GoogleTranslator(source='auto', target='en').translate(name)
     club_link = row.find('a',class_="name")['href']
     slug = club_link.split('/')[-2]
     club_response = requests.get(club_link)
     club_soup = BeautifulSoup(club_response.content, 'html.parser')
-    name = club_soup.find('div',class_="descr").text
-    print(name)
+    descr = club_soup.find('div',class_="descr").text
     print(name, " ", name_ru, " ", club_link)
     club_logo_box = club_soup.find('div',class_="img-box")
     club_logo = club_logo_box.find('img')['src']

@@ -10,7 +10,6 @@ django.setup()
 import requests
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
-
 from orm.db.models import Player
 from orm.db.models import Club
 
@@ -62,14 +61,14 @@ for club in a:
 
     i = 0
     for row in table_row:
-        # name = row.find('a').get_text()
+        name = row.find('a').get_text()
         player_link = row.find('a')['href']
 
         name_ru = row.find('a').get_text()
         number = row.find('td').get_text(strip=True)
         if not number:
             number = '0'
-        # name = GoogleTranslator(source='auto', target='en').translate(name)
+        name = GoogleTranslator(source='auto', target='en').translate(name)
         player_position = row.find_all('td')[-1].get_text(strip=True)
         position_code = get_position_code(player_position)
 
@@ -81,8 +80,7 @@ for club in a:
             continue
 
         club_soup = BeautifulSoup(club_response_content, 'html.parser')
-        name = club_soup.find('div',class_="descr").text
-        print(name)
+        descr = club_soup.find('div',class_="descr").text
         club_logo_box = club_soup.find('div', class_="img-box")
         if club_logo_box is None:
             print(f"No logo box found for {name}")
