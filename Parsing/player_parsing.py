@@ -6,7 +6,6 @@ import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
 import django
 django.setup()
-
 import requests
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
