@@ -128,7 +128,7 @@ for club in a:
             Player.objects.get(name=name)
             print('Already Exists: ', name)
         except Player.DoesNotExist:
-            Player.objects.create(name=name,slug=slug, shirt_number=number,image=relative_logo_path,club_id=b,position=position_code,name_ru=name_ru,player_link=player_link,competition_id=d,native=descr)
+            Player.objects.create(name=name,slug=slug, shirt_number=number,image=relative_logo_path,club_id=b,position=position_code,name_ru=name_ru,player_link=player_link,native=descr)
             i += 1
             print(i, 'created: ', name)
 

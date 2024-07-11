@@ -225,7 +225,7 @@ class Company(models.Model):
 class Competition(models.Model):
     title = models.CharField(max_length=255)
     counter = models.CharField(max_length=255, blank=True, null=True, db_comment='number of fixtures ,')
-    country_id = models.IntegerField(blank=True, null=True)
+    country = models.ForeignKey('Country', models.DO_NOTHING, blank=True, null=True)
     flag = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
@@ -234,6 +234,9 @@ class Competition(models.Model):
     created_by = models.IntegerField(blank=True, null=True, db_comment='10|41')
     updated_by = models.IntegerField(blank=True, null=True, db_comment='11|41')
     deleted_by = models.IntegerField(blank=True, null=True, db_comment='12|41')
+    name_ru = models.CharField(max_length=255, blank=True, null=True)
+    slug = models.CharField(max_length=255, blank=True, null=True)
+    competition_link = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -525,9 +528,8 @@ class Player(models.Model):
     price = models.IntegerField(blank=True, null=True)
     image = models.CharField(max_length=255, blank=True, null=True)
     shirt_number = models.SmallIntegerField(blank=True, null=True)
-    club_id = models.IntegerField(blank=True, null=True)
+    club = models.ForeignKey(Club, models.DO_NOTHING, blank=True, null=True)
     ochko = models.IntegerField(blank=True, null=True)
-    competition_id = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
     updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
     deleted_at = models.DateTimeField(blank=True, null=True, db_comment='9|82')
