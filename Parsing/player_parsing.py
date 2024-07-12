@@ -44,6 +44,7 @@ for club in a:
     url = f'https://www.sports.ru/football/club/{club.slug}/team/'
     b = club.id
     c = club.country_id
+    competition_id = club.competition_id
     response_content = fetch_content(url)
     if response_content is None:
         print(f"Failed to fetch {url} after retries.")
@@ -64,12 +65,6 @@ for club in a:
     if not table_row:
         print(f"No table rows found for {club.name}")
         continue
-
-
-    for com in competition:
-        if c == com.country_id:
-            d = com.id
-            break
 
 
 
@@ -114,7 +109,7 @@ for club in a:
 
 
         type = club_logo.split('.')[-1]
-        club_path = os.path.join(base_path,club.name)
+        club_path = os.path.join(base_path,slug)
         player_path = os.path.join(club_path,name)
         os.makedirs(player_path, exist_ok=True)
 
@@ -128,7 +123,7 @@ for club in a:
             Player.objects.get(name=name)
             print('Already Exists: ', name)
         except Player.DoesNotExist:
-            Player.objects.create(name=name,slug=slug, shirt_number=number,image=relative_logo_path,club_id=b,position=position_code,name_ru=name_ru,player_link=player_link,native=descr)
+            Player.objects.create(name=name,slug=slug, shirt_number=number,image=relative_logo_path,club_id=b,position=position_code,name_ru=name_ru,player_link=player_link,native=descr,competition_id=competition_id)
             i += 1
             print(i, 'created: ', name)
 

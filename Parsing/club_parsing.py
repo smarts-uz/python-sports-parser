@@ -43,6 +43,7 @@ for club in a:
         continue
 
     country_id = club.country_id
+    competition_id = club.id
 
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -92,11 +93,14 @@ for club in a:
         logo_response = requests.get(club_logo).content
         print(f'{name_en}.{file_type}')
 
-        club_path = os.path.join(base_path, name_en)
+        club_path = os.path.join(base_path, slug)
         os.makedirs(club_path, exist_ok=True)
         logo_path = os.path.join(club_path, f'{name_en}.{file_type}')
         relative_logo_path = logo_path.split('C:/Users/user/Desktop/Parser/Proliga')[-1].replace('\\', '/')
         print(relative_logo_path)
+
+        form_img = os.path.join(os.path.dirname(relative_logo_path), 'App.png').replace('\\', '/')
+        print(form_img)
 
         with open(logo_path, 'wb') as f:
             f.write(logo_response)
@@ -109,13 +113,15 @@ for club in a:
             Club.objects.create(
                 name=name_en,
                 flag_url=relative_logo_path,
-                country_id=country_id,  # country_id ni to'g'ri qiymat bilan almashtiring
+                country_id=country_id,
                 name_ru=name_ru,
                 club_link=club_link,
                 slug=slug,
                 native=descr,
                 region=country_en,
-                trainer=trener_en
+                trainer=trener_en,
+                competition_id=competition_id,
+                form_img = form_img
             )
             i += 1
             print(i, 'created: ', name_en)
