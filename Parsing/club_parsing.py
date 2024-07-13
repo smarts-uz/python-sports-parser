@@ -121,7 +121,7 @@ for club in a:
                 region=country_en,
                 trainer=trener_en,
                 competition_id=competition_id,
-                form_img = form_img
+                form_img=form_img
             )
             i += 1
             print(i, 'created: ', name_en)

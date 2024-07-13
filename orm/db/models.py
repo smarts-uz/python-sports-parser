@@ -95,7 +95,6 @@ class Club(models.Model):
     club_link = models.CharField(max_length=255, blank=True, null=True)
     native = models.CharField(max_length=255, blank=True, null=True)
     form_img = models.CharField(max_length=255, blank=True, null=True)
-    sports_url = models.CharField(max_length=255, blank=True, null=True)
     slug = models.CharField(max_length=255, blank=True, null=True)
     region = models.CharField(max_length=255, blank=True, null=True)
     trainer = models.CharField(max_length=255, blank=True, null=True)
