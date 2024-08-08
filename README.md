@@ -1,4 +1,4 @@
-# Parser CLI app
+# Sports Parser
 
 ## Quick Start
 
