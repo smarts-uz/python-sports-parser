@@ -6,7 +6,7 @@ sys.dont_write_bytecode = True
 # Django specific settings
 import os
 from dotenv import load_dotenv
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
 import django
 
 django.setup()
