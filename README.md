@@ -26,7 +26,7 @@ be sure you have .env file with it credentials
 ## Parser
 This command, given an ID, will parse all Club Players of that ID from the database  
 ```python
-py your_script.py ID
+py your_script.py competiton_id
 ```
 Example:  "py main.py 132 "
 
