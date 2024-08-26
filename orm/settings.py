@@ -4,7 +4,10 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '6few3nci_q_o@l1dlbk81%wcxe!*6r29yu629&d97!hiqat9fa'
 DEBUG = True
 ALLOWED_HOSTS = []
@@ -16,7 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'orm.db',  # Your specific app
+    'orm.db','orm', # Your specific app
 ]
 
 MIDDLEWARE = [
