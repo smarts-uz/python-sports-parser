@@ -260,7 +260,7 @@ class MatchResult(models.Model):
 
 class Player(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
-    position = models.TextField(blank=True, null=True)  # This field type is a guess.
+    position = models.CharField(max_length=100)  # This field type is a guess.
     price = models.IntegerField(blank=True, null=True)
     image = models.CharField(max_length=255, blank=True, null=True)
     shirt_number = models.SmallIntegerField(blank=True, null=True)

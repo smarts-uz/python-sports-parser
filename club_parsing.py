@@ -132,14 +132,23 @@ import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from deep_translator import GoogleTranslator
-from orm.db.models import Club, Competition
 
-# Load environment variables
+
+import os
+import django
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
 load_dotenv()
 
-# Set up Django settings
+# Set the Django settings module environment variable
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
+
+# Initialize Django
 django.setup()
+
+# Now you can import Django models
+from orm.db.models import Club, Competition
 
 
 # Function to fetch content with retries

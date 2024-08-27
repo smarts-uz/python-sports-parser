@@ -236,7 +236,9 @@ import requests
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 
-base_path = os.getenv('base_path_club')
+# Load base paths from environment variables
+base_path_club = os.getenv('base_path_club')
+base_path_player = os.getenv('base_path_player')
 
 def fetch_content(url, retries=3, timeout=10):
     for attempt in range(retries):
@@ -251,7 +253,6 @@ def fetch_content(url, retries=3, timeout=10):
     return None
 
 def parse_club(club):
-    club_id = club.id
     club_link = club.club_link
     response_content = fetch_content(club_link)
     if response_content is None:
@@ -291,26 +292,33 @@ def parse_club(club):
 
         print(f'{club.name}.{file_type}')
 
-        club_path = os.path.join(base_path, club.slug)
-        os.makedirs(club_path, exist_ok=True)
+        club_path = os.path.join(base_path_club, club.slug)
+        if not os.path.exists(club_path):
+            try:
+                os.makedirs(club_path)
+                os.makedirs(club_path, exist_ok=True)
+
+            except Exception as e:
+                print(f"Create folder with error: {e}")
         logo_path = os.path.join(club_path, f'{club.name}.{file_type}')
-        relative_logo_path = logo_path.replace(base_path, '').replace('\\', '/')
-        print(relative_logo_path)
+        relative_logo_path = logo_path.replace(base_path_club, '').replace('\\', '/')
+        print(f"{relative_logo_path}\n{logo_path}")
+
 
         form_img = os.path.join(os.path.dirname(relative_logo_path), 'App.png').replace('\\', '/')
         print(form_img)
 
         with open(logo_path, 'wb') as f:
             f.write(logo_response)
-        print(f'{club.name} Saved photo! ')
+        print(f'{club.name} Saved photo! with {logo_path} ')
 
         club.native = descr
         club.region = country_en
         club.trainer = trener_en
-        club.flag_url = relative_logo_path
+        club.flag_url = logo_path
         club.form_img = form_img
         club.save()
-        print(f'Updated: {club.name}')
+        print(f'Updated: {club.name} with {club.competition_id}')
         parse_club_players(club=club)
 
 def get_position_code(player_position):
@@ -352,7 +360,6 @@ def parse_club_players(club):
         print(f"No table rows found for {club.name}")
         return
 
-    i = 0
     for row in table_row:
         name_ru = row.find('a').get_text()
         player_link = row.find('a')['href']
@@ -363,40 +370,40 @@ def parse_club_players(club):
         player_position = row.find_all('td')[-1].get_text(strip=True)
         position_code = get_position_code(player_position)
 
-        club_response_content = fetch_content(player_link)
-        if club_response_content is None:
+        player_response_content = fetch_content(player_link)
+        if player_response_content is None:
             print(f"Failed to fetch {player_link} after retries.")
             continue
 
-        club_soup = BeautifulSoup(club_response_content, 'html.parser')
-        descr = club_soup.find('div', class_="descr").text
+        player_soup = BeautifulSoup(player_response_content, 'html.parser')
+        descr = player_soup.find('div', class_="descr").text
 
-        club_logo_box = club_soup.find('div', class_="img-box")
-        if club_logo_box is None:
+        player_logo_box = player_soup.find('div', class_="img-box")
+        if player_logo_box is None:
             print(f"No logo box found for {name}")
             continue
 
-        club_logo = club_logo_box.find('img')['src']
-        if not club_logo:
+        player_logo = player_logo_box.find('img')['src']
+        if not player_logo:
             print(f"No logo found for {name}")
             continue
 
-        logo_response_content = fetch_content(club_logo)
+        logo_response_content = fetch_content(player_logo)
         if logo_response_content is None:
             print(f"Failed to fetch logo for {name}")
             continue
 
-        file_type = club_logo.split('.')[-1]
+        file_type = player_logo.split('.')[-1]
         sanitized_name = sanitize_filename(name)
-        club_path = os.path.join(base_path, slug)
-        os.makedirs(club_path, exist_ok=True)
+        player_path = os.path.join(base_path_player, slug)
+        os.makedirs(player_path, exist_ok=True)
 
-        logo_path = os.path.join(club_path, f'{sanitized_name}.{file_type}')
-        relative_logo_path = logo_path.replace(base_path, '').replace('\\', '/')
+        logo_path = os.path.join(player_path, f'{sanitized_name}.{file_type}')
+        relative_logo_path = logo_path.replace(base_path_player, '').replace('\\', '/')
 
         with open(logo_path, 'wb') as f:
             f.write(logo_response_content)
-        print(f'{name} Saved photo! ')
+        print(f'{name} Saved photo! this dir:{logo_path}')
 
         # Update or create player
         player, created = Player.objects.update_or_create(
@@ -404,7 +411,7 @@ def parse_club_players(club):
             defaults={
                 'slug': slug,
                 'shirt_number': number,
-                'image': relative_logo_path,
+                'image':logo_path,
                 'club': club,
                 'position': position_code,
                 'name_ru': name_ru,
@@ -414,9 +421,9 @@ def parse_club_players(club):
             }
         )
         if created:
-            print(f'{name} created!')
+            print(f'{name} created! with {player.competition_id}')
         else:
-            print(f'{name} updated!')
+            print(f'{name} updated! with {player.competition_id}')
 
 def parse_clubs_by_competition(competition_id):
     clubs = Club.objects.filter(competition_id=competition_id)
