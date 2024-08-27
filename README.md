@@ -17,6 +17,10 @@ https://github.com/smarts-uz/python-sports-parser.git
  ```python
 py -m venv venv
 ```
+Activate your venv
+```python
+venv\scripts\activate 
+```
  Then install requirements
 ```python
 pip install -r requirements.txt
@@ -24,11 +28,11 @@ pip install -r requirements.txt
 be sure you have .env file with it credentials
 
 ## Parser
-This command, given an ID, will parse all Club Players of that ID from the database  
+This command, given an competition_id, will parse all Club and Players of that <competition_id> from the database  
 ```python
-py your_script.py ID
+py your_script.py <competition_id>
 ```
-Example:  "py main.py 132 "
+Example:  "py main.py 1"
 
 
 
