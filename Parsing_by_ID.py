@@ -290,20 +290,16 @@ def parse_club(club):
             print(f"Failed to fetch logo for {club.name}")
             return
 
-        print(f'{club.name}.{file_type}')
-
         club_path = os.path.join(base_path_club, club.slug)
         if not os.path.exists(club_path):
             try:
-                os.makedirs(club_path)
                 os.makedirs(club_path, exist_ok=True)
-
             except Exception as e:
                 print(f"Create folder with error: {e}")
+
         logo_path = os.path.join(club_path, f'{club.name}.{file_type}')
         relative_logo_path = logo_path.replace(base_path_club, '').replace('\\', '/')
         print(f"{relative_logo_path}\n{logo_path}")
-
 
         form_img = os.path.join(os.path.dirname(relative_logo_path), 'App.png').replace('\\', '/')
         print(form_img)
@@ -312,14 +308,22 @@ def parse_club(club):
             f.write(logo_response)
         print(f'{club.name} Saved photo! with {logo_path} ')
 
-        club.native = descr
-        club.region = country_en
-        club.trainer = trener_en
-        club.flag_url = logo_path
-        club.form_img = form_img
-        club.save()
+        # `update_or_create` methodni qo'llash
+        Club.objects.update_or_create(
+            slug=club.slug,
+            defaults={
+                'name': club.name,
+                'native': descr,
+                'region': country_en,
+                'trainer': trener_en,
+                'flag_url': logo_path,
+                'form_img': form_img
+            }
+        )
         print(f'Updated: {club.name} with {club.competition_id}')
-        parse_club_players(club=club)
+
+    # Klub o'yinchilarini tahlil qilish
+    parse_club_players(club=club)
 
 def get_position_code(player_position):
     switcher = {
