@@ -28,11 +28,11 @@ pip install -r requirements.txt
 be sure you have .env file with it credentials
 
 ## Parser
-This command, given an competition_id, will parse all Club and Players of that <competition_id> from the database  
+This command, given an competition_id, will parse all Club and Players of that <competition_id> from the database [1,2,4,5]  
 ```python
 py your_script.py <competition_id>
 ```
-Example:  "py main.py 1"
+Example:  "python parsing_comp_id.py 1"
 
 
 
