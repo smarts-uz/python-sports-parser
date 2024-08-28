@@ -131,8 +131,8 @@ for club in a:
             sanitized_name = sanitize_filename(name)
             club_path = os.path.join(base_path,slug)
             print(club_path)
-            # player_path = os.path.join(club_path,name)
-            # print(player_path)
+            player_path = os.path.join(club_path,name)
+            print(player_path)
             os.makedirs(club_path, exist_ok=True)
 
 
@@ -147,7 +147,7 @@ for club in a:
                 Player.objects.get(name=name)
                 print('Already Exists: ', name)
             except Player.DoesNotExist:
-                Player.objects.create(
+                Player.objects.update_or_create(
                     name=name,
                     slug=slug,
                     shirt_number=number,
@@ -157,7 +157,8 @@ for club in a:
                     name_ru=name_ru,
                     player_link=player_link,
                     native=descr,
-                    competition_id=competition_id
+                    competition_id=competition_id,
+                    price=Player.price
                 )
                 i += 1
                 print(i, 'created: ', name)
