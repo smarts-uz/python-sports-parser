@@ -265,7 +265,7 @@ class Player(models.Model):
     image = models.CharField(max_length=255, blank=True, null=True)
     shirt_number = models.SmallIntegerField(blank=True, null=True)
     club = models.ForeignKey(Club, models.DO_NOTHING, blank=True, null=True)
-    ochko = models.IntegerField(blank=True, null=True)
+    # ochko = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
     updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
     deleted_at = models.DateTimeField(blank=True, null=True, db_comment='9|82')
@@ -277,6 +277,7 @@ class Player(models.Model):
     native = models.CharField(max_length=255, blank=True, null=True)
     slug = models.CharField(max_length=255, blank=True, null=True)
     competition_id = models.IntegerField(blank=True, null=True)
+    is_actualized = models.BooleanField(default=False)
 
     class Meta:
         managed = False
