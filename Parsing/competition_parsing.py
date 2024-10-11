@@ -1,21 +1,28 @@
 import sys
-sys.dont_write_bytecode = True
-
-# Django specific settings
 import os
-from dotenv import load_dotenv
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
-import django
-django.setup()
-load_dotenv()
-
-# Define the base path for saving logos
-base_path = os.getenv('base_path_club')
-
-from orm.db.models import Competition
 import requests
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
+from dotenv import load_dotenv
+
+sys.dont_write_bytecode = True
+
+# Django specific settings
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
+import django
+django.setup()
+
+# .env faylidan yuklang
+load_dotenv()
+
+# HTML fayllarini va logolarni saqlash uchun asosiy yo'l
+base_path_html = os.getenv('base_path_html', 'd:/Python projects/sports images/Competition_HTML/')  # HTML va logolar saqlash joyi
+
+# Agar HTML katalog mavjud bo'lmasa, uni yaratamiz
+if not os.path.exists(base_path_html):
+    os.makedirs(base_path_html)
+
+from orm.db.models import Competition
 
 url = 'https://www.sports.ru/football/tournament/'
 response = requests.get(url)
@@ -28,8 +35,6 @@ table_row = table_body.find_all('tr')
 i = 0
 for row in table_row:
     name_tag = row.find('a', class_="name")
-    print(name_tag)
-
     if not name_tag:
         continue
 
@@ -37,26 +42,41 @@ for row in table_row:
     name_en = GoogleTranslator(source='auto', target='en').translate(name_ru)
     competition_link = name_tag['href']
     slug = competition_link.split('/')[-2]
-    print(name_ru, " ", name_en, " ", competition_link, " ", slug)
 
-    club_response = requests.get(competition_link)
-    club_soup = BeautifulSoup(club_response.content, 'html.parser')
+    # Musobaqa ma'lumotlarini olish va HTML faylini saqlash
+    competition_folder = os.path.join(base_path_html, name_en)
+    if not os.path.exists(competition_folder):
+        os.makedirs(competition_folder)
 
-    club_logo_box = club_soup.find('div', class_="img-box")
+    # HTML faylini saqlash
+    html_file_path = os.path.join(competition_folder, f"{slug}.html")
+    html_response = requests.get(competition_link)
+    with open(html_file_path, 'wb') as html_file:
+        html_file.write(html_response.content)
+        print(f"HTML saved for {name_en}: {html_file_path}")
+
+    # Logo olish
+    logo_url = None
+    club_logo_box = BeautifulSoup(html_response.content, 'html.parser').find('div', class_="img-box")
     if club_logo_box:
         club_logo = club_logo_box.find('img')['src']
-        file_type = club_logo.split('.')[-1]
-        logo_response = requests.get(club_logo).content
-        print(club_logo)
+        logo_url = club_logo
 
-    # Create or update the competition entry in the database
+        # Logo saqlash
+        logo_response = requests.get(logo_url)
+        logo_file_path = os.path.join(competition_folder, f"{slug}_logo.{logo_url.split('.')[-1]}")
+        with open(logo_file_path, 'wb') as logo_file:
+            logo_file.write(logo_response.content)
+            print(f"Logo saved for {name_en}: {logo_file_path}")
+
+    # Ma'lumotlar bazasiga musobaqani yaratish yoki yangilash
     try:
         Competition.objects.get(name=name_en)
         print('Already Exists: ', name_en)
     except Competition.DoesNotExist:
         Competition.objects.create(
+            name=name_en,
             title=name_en,
-            flag=club_logo,  # Use the relative path for the flag field
             name_ru=name_ru,
             competition_link=competition_link,
             slug=slug,
