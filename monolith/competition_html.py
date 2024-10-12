@@ -17,14 +17,14 @@ django.setup()
 load_dotenv()
 
 # HTML fayllarini saqlash uchun asosiy yo'l
-base_path_html = os.getenv('base_path_html', 'd:/Python projects/sports images/Competition_HTML/')  # HTML saqlash joyi
+base_path_html = os.getenv('base_path_competition')  # HTML saqlash joyi
 
 # Agar katalog mavjud bo'lmasa, uni yaratamiz
 if not os.path.exists(base_path_html):
     os.makedirs(base_path_html)
 
 # Olish uchun URL
-url = 'https://www.sports.ru/football/tournament/'
+url = os.getenv('competitions_url')
 response = requests.get(url)
 soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -52,7 +52,11 @@ for row in table_row:
     # Monolith yordamida HTML ni saqlash
     html_file_path = os.path.join(competition_folder, f"{slug}.html")
     try:
+        if os.path.exists(html_file_path):
+            print(f"HTML already exists for {name_en}, skipping...")
+            continue
         subprocess.run(["monolith", competition_link, "-o", html_file_path], check=True)
         print(f"HTML saved for {name_en}: {html_file_path}")
+
     except subprocess.CalledProcessError as e:
         print(f"Error occurred while downloading HTML for {name_en}: {e}")

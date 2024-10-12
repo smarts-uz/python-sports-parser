@@ -24,7 +24,7 @@ if not os.path.exists(base_path_html):
 
 from orm.db.models import Competition
 
-url = 'https://www.sports.ru/football/tournament/'
+url = os.getenv('competitions_url')
 response = requests.get(url)
 soup = BeautifulSoup(response.content, 'html.parser')
 
