@@ -16,7 +16,7 @@ django.setup()
 load_dotenv()
 
 # HTML fayllarini va logolarni saqlash uchun asosiy yo'l
-base_path_html = os.getenv('base_path_html', 'd:/Python projects/sports images/Competition_HTML/')  # HTML va logolar saqlash joyi
+base_path_html = os.getenv('base_path_competition')  # HTML va logolar saqlash joyi
 
 # Agar HTML katalog mavjud bo'lmasa, uni yaratamiz
 if not os.path.exists(base_path_html):
