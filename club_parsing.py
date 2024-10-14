@@ -226,7 +226,7 @@ def main():
             club_path = os.path.join(base_path, slug)
             os.makedirs(club_path, exist_ok=True)
             logo_path = os.path.join(club_path, f'{name_en}.{file_type}')
-            relative_logo_path = logo_path.split('C:/Users/user/Desktop/Parser/Proliga')[-1].replace('\\', '/')
+            relative_logo_path = logo_path.split('')[-1].replace('\\', '/')
             form_img = os.path.join(os.path.dirname(relative_logo_path), 'App.png').replace('\\', '/')
 
             with open(logo_path, 'wb') as f:
