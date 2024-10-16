@@ -7,7 +7,7 @@ from googletrans import Translator
 from dotenv import load_dotenv
 import click
 import django
-from django.conf import settings
+# from django.conf import settings
 
 # Load environment variables from .env file
 load_dotenv()
