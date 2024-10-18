@@ -1,5 +1,4 @@
 import os
-
 import click
 import requests
 from bs4 import BeautifulSoup
@@ -7,6 +6,7 @@ from dotenv import load_dotenv
 import django
 import subprocess
 from deep_translator import GoogleTranslator
+from django.utils import timezone  # timezone ni import qiling
 
 # .env faylidan yuklang
 load_dotenv()
@@ -15,8 +15,7 @@ load_dotenv()
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
 django.setup()
 
-from orm.db.models import Competition
-
+from orm.db.models import Competition, Club  # Club modelini import qildik
 
 def save_club_htmls_by_competition_id(competition_id):
     try:
@@ -39,7 +38,7 @@ def save_club_htmls_by_competition_id(competition_id):
             # HTML saqlash uchun bazaviy yo'l
             base_path_html = os.getenv('base_path_club')
 
-            # Har bir klub uchun HTMLni saqlash
+            # Har bir klub uchun HTMLni saqlash va bazaga kiritish
             for club in clubs:
                 link_tag = club.find('a')
                 if link_tag:
@@ -50,15 +49,33 @@ def save_club_htmls_by_competition_id(competition_id):
                     # Klub nomini ingliz tiliga tarjima qilish
                     club_name_en = GoogleTranslator(source='auto', target='en').translate(club_name)
 
+                    # Klub uchun slug bo'yicha yangilash yoki yaratish
+                    club, created = Club.objects.update_or_create(
+                        slug=club_slug,competition_id=competition.id,
+                        defaults={
+                            'name_ru': club_name,
+                            'link': club_link,
+                            'updated_at': timezone.now(),  # Yangilanish vaqti
+                        }
+                    )
+                    if created:
+                        print(f'Created: {club.name} with {club.competition_id}-{club_link}')
+                    else:
+                        print(f'Updated: {club.name} with {club.competition_id}-{club_link}')
 
-                    # Klub uchun slug bo'yicha papka yaratish
+
+                    # Agar yangi klub yaratilgan bo'lsa, created_at maydonini to'ldirish
+                    if created:
+                        club.created_at = timezone.now()  # Yangi ob'ekt uchun yaratilgan vaqt
+                        club.save()  # Yangilangan klubni saqlang
+
+                    # Klub HTMLsini saqlash
                     club_folder_path = os.path.join(base_path_html, club_slug)
                     os.makedirs(club_folder_path, exist_ok=True)
 
-                    # Klub HTMLsini saqlash
-                    html_file_path = os.path.join(club_folder_path,
-                                                  f"{club_name_en}.html")  # Tarjima qilingan nomi bilan saqlash
+                    html_file_path = os.path.join(club_folder_path, f"{club_name_en}.html")  # Tarjima qilingan nomi bilan saqlash
 
+                    # HTML fayli mavjudligini tekshirish
                     if os.path.exists(html_file_path):
                         print(f"HTML for {club_name_en} already exists: {html_file_path} skip...")
                     else:
@@ -76,10 +93,9 @@ def save_club_htmls_by_competition_id(competition_id):
         print(f"An error occurred: {e}")
 
 @click.command()
-@click.argument('competition_id',type=int)
+@click.argument('competition_id', type=int)
 def competition(competition_id):
     save_club_htmls_by_competition_id(competition_id)
 
 if __name__ == '__main__':
     competition()
-
