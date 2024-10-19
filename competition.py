@@ -49,25 +49,26 @@ def save_club_htmls_by_competition_id(competition_id):
                     # Klub nomini ingliz tiliga tarjima qilish
                     club_name_en = GoogleTranslator(source='auto', target='en').translate(club_name)
 
-                    # Klub uchun slug bo'yicha yangilash yoki yaratish
-                    club, created = Club.objects.update_or_create(
-                        slug=club_slug,competition_id=competition.id,
-                        defaults={
-                            'name_ru': club_name,
-                            'link': club_link,
-                            'updated_at': timezone.now(),  # Yangilanish vaqti
-                        }
-                    )
-                    if created:
-                        print(f'Created: {club.name} with {club.competition_id}-{club_link}')
-                    else:
-                        print(f'Updated: {club.name} with {club.competition_id}-{club_link}')
-
-
-                    # Agar yangi klub yaratilgan bo'lsa, created_at maydonini to'ldirish
-                    if created:
-                        club.created_at = timezone.now()  # Yangi ob'ekt uchun yaratilgan vaqt
-                        club.save()  # Yangilangan klubni saqlang
+                    try:
+                        club = Club.objects.get(slug=club_slug, competition_id=competition_id)
+                        # Agar klub mavjud bo'lsa, yangilash
+                        club.name = club_name_en
+                        club.name_ru = club_name
+                        club.club_link = club_link
+                        club.updated_at = timezone.now()
+                        club.save()
+                        print(f"Updated existing Club: {club.name} with ID {club.id}- link{club_link}")
+                    except Club.DoesNotExist:
+                        # Agar klub topilmasa, yangi klub yaratish
+                        club = Club.objects.create(
+                            name=club_name_en,
+                            slug=club_slug,
+                            competition_id=competition_id,
+                            name_ru=club_name,
+                            club_link=club_link,
+                            created_at=timezone.now(),
+                        )
+                        print(f"Created new Club: {club.name} with ID- link{club_link}")
 
                     # Klub HTMLsini saqlash
                     club_folder_path = os.path.join(base_path_html, club_slug)
