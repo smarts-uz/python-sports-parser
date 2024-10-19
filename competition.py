@@ -62,6 +62,7 @@ def save_club_htmls_by_competition_id(competition_id):
                         # Agar klub topilmasa, yangi klub yaratish
                         club = Club.objects.create(
                             name=club_name_en,
+                            competition_name=competition.name,
                             slug=club_slug,
                             competition_id=competition_id,
                             name_ru=club_name,
