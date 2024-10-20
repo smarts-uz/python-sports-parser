@@ -123,8 +123,8 @@ def club_parse(competition_id):
 
 @click.command()
 @click.argument('competition_id', type=int)
-def competition(competition_id):
+def club(competition_id):
     club_parse(competition_id)
 
 if __name__ == '__main__':
-    competition()
+    club()

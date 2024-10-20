@@ -11,3 +11,8 @@ def fetch_content(url, retries=3, timeout=10):
             if attempt < retries - 1:
                 print(f"Retrying ({attempt + 1}/{retries})...")
     return None
+def sanitize_filename(filename):
+    invalid_chars = '<>:"/\\|?*'
+    for char in invalid_chars:
+        filename = filename.replace(char, '_')
+    return filename
