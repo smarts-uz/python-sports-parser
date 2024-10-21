@@ -1,16 +1,52 @@
-# This is a sample Python script.
+import os
+import click
+import requests
+from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+import django
+import subprocess
+from deep_translator import GoogleTranslator
+from django.utils import timezone  # timezone ni import qiling
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# .env faylidan yuklang
+load_dotenv()
+
+# Django maxsus sozlamalari
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
+django.setup()
+
+from orm.db.models import Competition, Club  # Club modelini import qildik
+
+# Calling cmd functions
+from cmd_lines.competition import save_club_htmls_by_competition_id
+from cmd_lines.Club import club_parse
+
+@click.group()
+def main():
+    pass
+#working with click cmd line arguments
+# Competition command with competition id
+@click.command()
+@click.argument('competition_id', type=int)
+def competition(competition_id):
+    """Parses clubs and saves HTML by competition ID."""
+    save_club_htmls_by_competition_id(competition_id)
+    print(f"Clubs saved for competition ID: {competition_id}")
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# Club parsing command
+@click.command()
+@click.argument('competition_id', type=int)
+def club(competition_id):
+    """Parses players from clubs for the given competition ID."""
+    club_parse(competition_id)
+    print(f"Club parsing completed for competition ID: {competition_id}")
 
 
-# Press the green button in the gutter to run the script.
+
+# Adding commands to the main group
+main.add_command(competition)
+main.add_command(club)
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    main()

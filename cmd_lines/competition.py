@@ -4,9 +4,10 @@ import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import django
-import subprocess
+
 from deep_translator import GoogleTranslator
 from django.utils import timezone  # timezone ni import qiling
+from monolithh.monolith_htmls import html_downloader
 
 # .env faylidan yuklang
 load_dotenv()
@@ -19,6 +20,7 @@ from orm.db.models import Competition, Club  # Club modelini import qildik
 
 def save_club_htmls_by_competition_id(competition_id):
     try:
+
         # Musobaqani olish
         competition = Competition.objects.get(id=competition_id)
         competition_link = competition.competition_link + "table/"  # Musobaqa havolasini qo'shish
@@ -76,16 +78,8 @@ def save_club_htmls_by_competition_id(competition_id):
                     os.makedirs(club_folder_path, exist_ok=True)
 
                     html_file_path = os.path.join(club_folder_path, f"{club_name_en}.html")  # Tarjima qilingan nomi bilan saqlash
-
-                    # HTML fayli mavjudligini tekshirish
-                    if os.path.exists(html_file_path):
-                        print(f"HTML for {club_name_en} already exists: {html_file_path} skip...")
-                    else:
-                        # Monolith yordamida HTML saqlash
-                        print(f"Saving HTML for {club_name_en}...")
-                        subprocess.run(["monolith", club_link, "-o", html_file_path], check=True)
-                        print(f"HTML saved for {club_name_en}: {html_file_path}")
-
+                    # htmls downloader functions
+                    html_downloader(club_name_en,club_link,html_file_path)
         else:
             print("Competition page could not be retrieved.")
 
@@ -93,11 +87,3 @@ def save_club_htmls_by_competition_id(competition_id):
         print(f"Competition with id {competition_id} does not exist.")
     except Exception as e:
         print(f"An error occurred: {e}")
-
-@click.command()
-@click.argument('competition_id', type=int)
-def competition(competition_id):
-    save_club_htmls_by_competition_id(competition_id)
-
-if __name__ == '__main__':
-    competition()

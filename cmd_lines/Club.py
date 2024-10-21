@@ -4,8 +4,11 @@ import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from deep_translator import GoogleTranslator
-import click
 from django.utils import timezone
+
+from Parsing.actualizer import club_name
+from monolithh.monolith_htmls import html_downloader
+
 
 # Load environment variables
 load_dotenv()
@@ -80,29 +83,38 @@ def club_parse(competition_id):
         trener_en = GoogleTranslator(source='auto', target='en').translate(trener_ru)
 
         club_logo_box = club_soup.find('div', class_="img-box")
-        club_logo = club_logo_box.find('img')['src']
-        file_type = club_logo.split('.')[-1]
-        logo_response = requests.get(club_logo).content
+        if club_logo_box:
+            club_logo = club_logo_box.find('img')['src']
+            file_type = club_logo.split('.')[-1]
+            logo_response = fetch_content(club_logo)
 
-        # Save logo image
-        base_path = os.getenv('base_path_club')
-        club_path = os.path.join(base_path, slug)
-        os.makedirs(club_path, exist_ok=True)
-        logo_path = os.path.join(club_path, f'{name_en}.{file_type}')
+            # Save logo image
+            base_path = os.getenv('base_path_club')
+            club_path = os.path.join(base_path, slug)
+            os.makedirs(club_path, exist_ok=True)
+            logo_path = os.path.join(club_path, f'{name_en}.{file_type}')
 
-        # Correctly define relative_logo_path
-        relative_logo_path = logo_path.replace('\\', '/').replace(base_path, '')
+            # Correctly define relative_logo_path
+            relative_logo_path = logo_path.replace(base_path, '').replace('\\', '/')
+            relative_logo_path=f"/public/plasmic/proliga/images/club/{relative_logo_path}"
+            print(relative_logo_path)
 
-        form_img = os.path.join(os.path.dirname(logo_path), 'App.png').replace('\\', '/')
+            form_img = os.path.join(os.path.dirname(relative_logo_path), 'App.png').replace('\\', '/')
+            from_img=f"/public/plasmic/proliga/images/club/{from_img}"
+            print(form_img)
 
-        with open(logo_path, 'wb') as f:
-            f.write(logo_response)
+            with open(logo_path, 'wb') as f:
+                f.write(logo_response)
+
+            print(f'{club_name}')
+
+
 
         # Update or create Club instance
         club, created = update_or_create_club(
             name=name_en,
             competition_name=competition.name,
-            flag_url=logo_path,
+            flag_url=relative_logo_path,
             country_id=competition.country_id,
             name_ru=name_ru,
             club_link=club_link,
@@ -120,11 +132,3 @@ def club_parse(competition_id):
             print(f'{name_en} created successfully with id-{club.id}-club_link {club_link}')
         else:
             print(f'{name_en} updated successfully with id-{club.id}-club_link {club_link}')
-
-@click.command()
-@click.argument('competition_id', type=int)
-def club(competition_id):
-    club_parse(competition_id)
-
-if __name__ == '__main__':
-    club()

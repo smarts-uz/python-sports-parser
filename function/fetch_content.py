@@ -16,3 +16,17 @@ def sanitize_filename(filename):
     for char in invalid_chars:
         filename = filename.replace(char, '_')
     return filename
+
+def get_position_code(player_position):
+    """Get position code based on player position name."""
+    switcher = {
+        'вратарь': 'GOA',
+        'защитник': 'DEF',
+        'полузащитник': 'MID',
+        'нападающий': 'STR',
+        None: None
+    }
+    return switcher.get(player_position, 'None')
+
+
+
