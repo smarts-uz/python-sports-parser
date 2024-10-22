@@ -24,11 +24,13 @@ pip install -r requirements.txt
 be sure you have .env file with it credentials
 
 ## Parser
-This command, given an ID, will parse all Club Players of that ID from the database  
-```python
-py your_script.py competiton_id
+This command, given an competition ID, will parse all Club Players of that ID from the database  
+```python 
+python main.py competition 1
+python main.py club 1
+python main.py players 1
 ```
-Example:  "py main.py 132 "
+Example:  "py main.py club 1 "
 
 
 
