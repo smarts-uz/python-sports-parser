@@ -115,7 +115,7 @@ def parse_players(competition_id):
 
             else:
                 print(f'Updated: {name_en}, Slug: {slug}, Club ID: {club.id}, Link: {player_link}')
-                
+
             create_player_image(player)
 competition_id = 1  # Bu yerda kerakli competition_id ni berish kerak
 parse_players(competition_id)

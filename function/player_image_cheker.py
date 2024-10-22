@@ -56,7 +56,7 @@ def download_player_image(player_image_url, player_name, player_slug, base_path_
         file_name = f"{player_name}{file_extension}"  # Fayl nomi: "Arsen Zakharyan.png"
 
         # Rasmni saqlash uchun slug nomiga asoslangan papkani yaratamiz
-        player_folder = os.path.join(base_path_player, 'player', player_slug)
+        player_folder = os.path.join(base_path_player,player_slug)
 
         os.makedirs(player_folder, exist_ok=True)
         full_image_path = os.path.join(player_folder, file_name)
