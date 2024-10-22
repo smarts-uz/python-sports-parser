@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from deep_translator import GoogleTranslator
 from django.utils import timezone
 
-from Parsing.actualizer import club_name
+
 from monolithh.monolith_htmls import html_downloader
 
 
@@ -92,21 +92,27 @@ def club_parse(competition_id):
             base_path = os.getenv('base_path_club')
             club_path = os.path.join(base_path, slug)
             os.makedirs(club_path, exist_ok=True)
-            logo_path = os.path.join(club_path, f'{name_en}.{file_type}')
+            file_name = f'{name_en}.{file_type}'
+            file_path = os.path.join(club_path, file_name)
+            if os.path.exists(file_path):
+                print(f'Image for {name_en} already exists in relative_path:{file_path}')
+            else:
+                with open(file_path, 'wb') as f:
+                    f.write(logo_response)
+                print(f'Image for {name_en} saved in {file_path}')
 
-            # Correctly define relative_logo_path
-            relative_logo_path = logo_path.replace(base_path, '').replace('\\', '/')
-            relative_logo_path=f"/public/plasmic/proliga/images/club/{relative_logo_path}"
-            print(relative_logo_path)
+            best_path=os.getenv('best_path')
+            logo_path = os.path.join(best_path, f'{slug}/{name_en}.{file_type}')
+            print(logo_path)
 
-            form_img = os.path.join(os.path.dirname(relative_logo_path), 'App.png').replace('\\', '/')
-            from_img=f"/public/plasmic/proliga/images/club/{from_img}"
+            form_img = os.path.join(f'{best_path}{slug}/App.png')
+
             print(form_img)
 
-            with open(logo_path, 'wb') as f:
-                f.write(logo_response)
-
-            print(f'{club_name}')
+            # with open(club_path, 'wb') as f:
+            #     f.write(logo_response)
+            #
+            # print(f'{name_en}')
 
 
 
@@ -114,7 +120,7 @@ def club_parse(competition_id):
         club, created = update_or_create_club(
             name=name_en,
             competition_name=competition.name,
-            flag_url=relative_logo_path,
+            flag_url=logo_path,
             country_id=competition.country_id,
             name_ru=name_ru,
             club_link=club_link,

@@ -51,17 +51,17 @@ def save_club_htmls_by_competition_id(competition_id):
                     # Klub nomini ingliz tiliga tarjima qilish
                     club_name_en = GoogleTranslator(source='auto', target='en').translate(club_name)
 
-                    try:
-                        club = Club.objects.get(slug=club_slug, competition_id=competition_id)
-                        # Agar klub mavjud bo'lsa, yangilash
+                    club = Club.objects.filter(slug=club_slug, competition_id=competition_id).first()
+                    if club:
+                        # Update club if it exists
                         club.name = club_name_en
                         club.name_ru = club_name
                         club.club_link = club_link
                         club.updated_at = timezone.now()
                         club.save()
-                        print(f"Updated existing Club: {club.name} with ID {club.id}- link{club_link}")
-                    except Club.DoesNotExist:
-                        # Agar klub topilmasa, yangi klub yaratish
+                        print(f"Updated existing Club: {club.name} with ID {club.id} - link {club_link}")
+                    else:
+                        # Create a new club if not found
                         club = Club.objects.create(
                             name=club_name_en,
                             competition_name=competition.name,
@@ -71,7 +71,7 @@ def save_club_htmls_by_competition_id(competition_id):
                             club_link=club_link,
                             created_at=timezone.now(),
                         )
-                        print(f"Created new Club: {club.name} with ID- link{club_link}")
+                        print(f"Created new Club: {club.name} - link {club_link}")
 
                     # Klub HTMLsini saqlash
                     club_folder_path = os.path.join(base_path_html, club_slug)
