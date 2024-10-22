@@ -20,7 +20,7 @@ from orm.db.models import Competition, Club  # Club modelini import qildik
 # Calling cmd functions
 from cmd_lines.competition import save_club_htmls_by_competition_id
 from cmd_lines.Club import club_parse
-from cmd_lines.playerss import parse_players
+from cmd_lines.players_main import parse_players
 
 @click.group()
 def main():

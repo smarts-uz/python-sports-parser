@@ -6,7 +6,6 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
 
-
 # Load environment variables
 load_dotenv()
 
@@ -58,16 +57,18 @@ def download_player_image(player_image_url, player_name, player_slug, base_path_
 
         # Rasmni saqlash uchun slug nomiga asoslangan papkani yaratamiz
         player_folder = os.path.join(base_path_player, 'player', player_slug)
+
         os.makedirs(player_folder, exist_ok=True)
-
-        # To'liq rasm manzili
         full_image_path = os.path.join(player_folder, file_name)
+        if os.path.exists(full_image_path):
+            print(f"image {file_name} already downloaded this path: {full_image_path}")
 
-        # Rasm faylini saqlash
-        with open(full_image_path, 'wb') as file:
-            file.write(response.content)
+        else:
+            # Rasm faylini saqlash
+            with open(full_image_path, 'wb') as file:
+                file.write(response.content)
 
-        print(f"Image successfully downloaded: {full_image_path}")
+            print(f"Image successfully downloaded: {full_image_path}")
 
         # Nisbiy manzilni yaratamiz
         relative_image_path = os.path.join(f'/player/{player_slug}/{file_name}')
@@ -80,23 +81,23 @@ def download_player_image(player_image_url, player_name, player_slug, base_path_
         return None
 
 def create_player_image(player):
-    # Agar image maydoni null bo'lsa, davom etamiz
-    if player.image is None:
-        print(f"Downloading image for player: {player.name} with {player.club_id} with {player.player_link} {player.image}")
+    # Rasm manzilini sahifadan olamiz
+    player_image_url = get_player_image_url(player.player_link)
 
-        # Rasm manzilini sahifadan olamiz
-        player_image_url = get_player_image_url(player.player_link)
+    # Agar rasm manzili mavjud bo'lsa, rasmni yuklab olamiz
+    if player_image_url:
+        image_path = download_player_image(player_image_url, player.name, player.slug, base_path_player)
 
-        # Agar rasm manzili mavjud bo'lsa, rasmni yuklab olamiz
-        if player_image_url:
-            image_path = download_player_image(player_image_url, player.name, player.slug, base_path_player)
-
-            # Rasmni saqlagandan keyin playerning image maydoniga rasm manzilini yozamiz
-            if image_path:
-                player.image = image_path
-                player.save()
-                print(f"Player image created: {player.name} with player_image: {player.image}")
-        else:
-            print(f"Image not found for player: {player.name} {player.club_id} with {player.player_link}")
+        # Rasmni saqlagandan keyin playerning image maydoniga rasm manzilini yozamiz
+        if image_path:
+            player.image = image_path
+            player.save()
+            print(f"Player image created: {player.name} with player_image: {player.image}")
     else:
-        print(f"Player {player.name} already has an image. Skipping... with player image path {player.image} in {player.club_id} with {player.player_link}")
+        print(f"Image not found for player: {player.name} {player.club_id} with {player.player_link}")
+    # Agar image maydoni null bo'lsa, davom etamiz
+
+
+
+    # else:
+    #     print(f"Player {player.name} already has an image. Skipping... with player image path {player.image} in {player.club_id} with {player.player_link}")
