@@ -1,45 +1,61 @@
-import sys
 import os
-from dotenv import load_dotenv
-import click
 import requests
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
-from function.fetch_content import fetch_content
-from function.player_image_cheker import create_player_image
 from django.utils import timezone
-# Django specific settings
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Set the Django settings module environment variable
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
+
+# Initialize Django
 import django
 django.setup()
+
+from monolithh.monolith_htmls import html_downloader
+from function.fetch_content import fetch_content,get_position_code
+# Import Django models after setting up Django
 from orm.db.models import Player, Club
 
-def get_position_code(player_position):
-    switcher = {
-        'вратарь': 'GOA',
-        'защитник': 'DEF',
-        'полузащитник': 'MID',
-        'нападающий': 'STR',
-        None: None
-    }
-    return switcher.get(player_position, 'None')
+# Base paths for saving player and club HTML files
+base_path_player = os.getenv('base_path_player')
+# base_path_club = os.getenv('base_path_club')
 
-def sanitize_filename(filename):
-    invalid_chars = '<>:"/\\|?*'
-    for char in invalid_chars:
-        filename = filename.replace(char, '_')
-    return filename
 
-@click.command()
-@click.option('--competition_id', type=int, required=True, help='ID of the competition to parse players from.')
+def update_or_create_player(name, slug, **fields):
+    """O'yinchini yangilash yoki yaratish."""
+    players = Player.objects.filter(name=name, slug=slug)
+
+    if players.count() > 1:
+        print(f"Multiple players found for {name}. Please check the data.")
+        return None, False
+
+    if players.exists():
+        player = players.first()
+        for field, value in fields.items():
+            setattr(player, field, value)
+        player.save()
+        print(f"Updated player: {name} (Slug: {slug})")
+        created = False
+    else:
+        player = Player.objects.create(name=name, slug=slug, **fields)
+        print(f"Created new player: {name} (Slug: {slug})")
+        created = True
+
+    return player, created
+
 def parse_players(competition_id):
+    """Berilgan competition_id orqali o'yinchilarni parslash."""
     clubs = Club.objects.filter(competition_id=competition_id)
     if not clubs.exists():
         print(f"No clubs found for competition ID: {competition_id}")
         return
 
     for club in clubs:
-        print(f"Parsing players for club: {club.name} in ID:{club.id}")
+        print(f"Parsing players for club: {club.name} (ID: {club.id})")
         url = f'https://www.sports.ru/football/club/{club.slug}/team/'
         response_content = fetch_content(url)
 
@@ -69,32 +85,29 @@ def parse_players(competition_id):
             player_position = row.find_all('td')[-1].get_text(strip=True)
             position_code = get_position_code(player_position)
 
-            # Fetch players with the same slug and competition_id
-            existing_players = Player.objects.filter(slug=slug, competition_id=competition_id)
+            player, created = update_or_create_player(
+                name=name_en,
+                slug=slug,
+                shirt_number=number,
+                club=club,
+                position=position_code,
+                name_ru=name,
+                player_link=player_link,
+                competition_id=competition_id,
+                updated_at=timezone.now(),
+                created_at=timezone.now(),
+            )
 
-            if existing_players.exists():
-                for player in existing_players:
-                    print(f'Already Exists: {player.name} (Slug: {slug}), ID: {player.id}, Link: {player_link}')
-                # Optionally, you can choose to skip creating new players here
-                continue  # Skip to the next player if one already exists
-
+            if created:
+                print(f'Created: {name_en}, Club ID: {club.id}, Link: {player_link}')
             else:
-                # Create new player record
-                player = Player.objects.create(
-                    name=name_en,
-                    slug=slug,
-                    shirt_number=number,
-                    club=club,
-                    position=position_code,
-                    name_ru=name,
-                    player_link=player_link,
-                    competition_id=competition_id,
-                    created_at=timezone.now(),
-                )
-                print(f'Created: {player.name} (ID: {player.id}), Club ID: {club.id}, Link: {player.player_link}')
+                print(f'Already Exists: {name_en}, Slug: {slug}, Club ID: {club.id}, Link: {player_link}')
 
-                # Create player image
-                create_player_image(player)
+            player_foldr_path=os.path.join(base_path_player,slug)
+            os.makedirs(player_foldr_path, exist_ok=True)
+            html_file_path = os.path.join(player_foldr_path,f"{name_en}.html")
+            html_downloader(name_en,player_link,html_file_path)
 
-if __name__ == '__main__':
-    parse_players()
+# Competition ID'ni kiriting
+competition_id = 1  # O'zingizga kerakli competition_id ni kiriting
+parse_players(competition_id)

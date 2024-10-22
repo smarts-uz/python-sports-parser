@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
-from Parsing.player_actualize_club import player
+
 
 # Load environment variables
 load_dotenv()
