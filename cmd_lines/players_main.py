@@ -109,5 +109,5 @@ def parse_players(competition_id):
 
             player_foldr_path=os.path.join(base_path_player,slug)
             os.makedirs(player_foldr_path, exist_ok=True)
-            html_file_path = os.path.join(player_foldr_path,f"{name_en}.html")
+            html_file_path = os.path.join(player_foldr_path,f"app.html")
             html_downloader(name_en,player_link,html_file_path)

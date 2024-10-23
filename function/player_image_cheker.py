@@ -53,7 +53,7 @@ def download_player_image(player_image_url, player_name, player_slug, base_path_
         file_extension = os.path.splitext(parsed_url.path)[1]  # Fayl kengaytmasini olamiz
 
         # Fayl nomini futbolchining to'liq ismi bo'yicha yaratamiz
-        file_name = f"{player_name}{file_extension}"  # Fayl nomi: "Arsen Zakharyan.png"
+        file_name = f"app{file_extension}"  # Fayl nomi: "Arsen Zakharyan.png"
 
         # Rasmni saqlash uchun slug nomiga asoslangan papkani yaratamiz
         player_folder = os.path.join(base_path_player,player_slug)

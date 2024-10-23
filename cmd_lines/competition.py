@@ -16,7 +16,7 @@ load_dotenv()
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
 django.setup()
 
-from orm.db.models import Competition, Club  # Club modelini import qildik
+from orm.db.models import Competition,Club  # Club modelini import qildik
 
 def save_club_htmls_by_competition_id(competition_id):
     try:
@@ -44,9 +44,11 @@ def save_club_htmls_by_competition_id(competition_id):
             for club in clubs:
                 link_tag = club.find('a')
                 if link_tag:
-                    club_name = link_tag.text.strip()  # Klub nomini olish
+                    club_name = link_tag.text.strip()
+                    print(club_name)# Klub nomini olish
                     club_slug = link_tag['href'].split('/')[-2]  # Klub slugini olish
-                    club_link = link_tag['href']  # Klub havolasini olish
+                    club_link = link_tag['href']
+                    # Klub havolasini olish
 
                     # Klub nomini ingliz tiliga tarjima qilish
                     club_name_en = GoogleTranslator(source='auto', target='en').translate(club_name)
@@ -77,7 +79,7 @@ def save_club_htmls_by_competition_id(competition_id):
                     club_folder_path = os.path.join(base_path_html, club_slug)
                     os.makedirs(club_folder_path, exist_ok=True)
 
-                    html_file_path = os.path.join(club_folder_path, f"{club_name_en}.html")  # Tarjima qilingan nomi bilan saqlash
+                    html_file_path = os.path.join(club_folder_path,'app.html')  # Tarjima qilingan nomi bilan saqlash
                     # htmls downloader functions
                     html_downloader(club_name_en,club_link,html_file_path)
         else:
