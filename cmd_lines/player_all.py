@@ -48,7 +48,7 @@ def update_or_create_player(name, slug, club_id, player_link, **fields):
     except Exception as e:
         print(f"An error occurred while updating or creating player: {e}")
         return None, False
-def parse_players(competition_id):
+def parse_player_all(competition_id):
     """Berilgan competition_id asosida barcha o'yinchilarni parslaydi."""
     clubs = Club.objects.filter(competition_id=competition_id)
     if not clubs.exists():
@@ -117,5 +117,3 @@ def parse_players(competition_id):
                 print(f'Updated: {name_en}, Slug: {slug}, Club ID: {club.id}, Link: {player_link}')
 
             create_player_image(player)
-competition_id = 1  # Bu yerda kerakli competition_id ni berish kerak
-parse_players(competition_id)

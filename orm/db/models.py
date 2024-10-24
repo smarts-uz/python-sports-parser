@@ -82,27 +82,31 @@ class Card(models.Model):
 
 
 class Club(models.Model):
+    id = models.AutoField(primary_key=True)  # avtomatik bo‘lishi kerak
     name = models.CharField(max_length=255, blank=True, null=True)
-    flag_url = models.CharField(max_length=255, blank=True, null=True)
-    country = models.ForeignKey('Country', models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
-    updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
-    deleted_at = models.DateTimeField(blank=True, null=True, db_comment='9|82')
-    created_by = models.IntegerField(blank=True, null=True, db_comment='10|41')
-    updated_by = models.IntegerField(blank=True, null=True, db_comment='11|41')
-    deleted_by = models.IntegerField(blank=True, null=True, db_comment='12|41')
+    competition_name = models.CharField(max_length=255, blank=True, null=True)
     name_ru = models.CharField(max_length=255, blank=True, null=True)
+    competition_id = models.IntegerField(blank=True, null=True)
     club_link = models.CharField(max_length=255, blank=True, null=True)
+    country_id = models.IntegerField(blank=True, null=True)
     native = models.CharField(max_length=255, blank=True, null=True)
     form_img = models.CharField(max_length=255, blank=True, null=True)
     slug = models.CharField(max_length=255, blank=True, null=True)
     region = models.CharField(max_length=255, blank=True, null=True)
     trainer = models.CharField(max_length=255, blank=True, null=True)
-    competition_id = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True, db_comment='7|82')
+    updated_at = models.DateTimeField(blank=True, null=True, db_comment='8|82')
+    deleted_at = models.DateTimeField(blank=True, null=True, db_comment='9|82')
+    logo_img = models.CharField(max_length=255, blank=True, null=True)
+    created_by = models.IntegerField(blank=True, null=True, db_comment='10|41')
+    updated_by = models.IntegerField(blank=True, null=True, db_comment='11|41')
+    deleted_by = models.IntegerField(blank=True, null=True, db_comment='12|41')
+
 
     class Meta:
         managed = False
         db_table = 'club'
+        db_table_comment = '4'
 
 
 class Company(models.Model):
@@ -128,6 +132,7 @@ class Company(models.Model):
     email_notification = models.BooleanField(blank=True, null=True)
     sms_notification = models.BooleanField(blank=True, null=True)
     notification_date = models.IntegerField(blank=True, null=True)
+    html_paths=models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False

@@ -21,8 +21,8 @@ django.setup()
 from orm.db.models import Club, Competition
 from function.fetch_content import fetch_content
 # Function to update or create a Club instance
-def update_or_create_club(name, **fields):
-    clubs = Club.objects.filter(name=name)
+def update_or_create_club(name,slug,competition_id, **fields):
+    clubs = Club.objects.filter(name=name,slug=slug,competition_id=competition_id)
     if clubs.count() > 1:
         print(f"Multiple clubs found with name '{name}'. Manual review needed.")
         return
@@ -34,7 +34,7 @@ def update_or_create_club(name, **fields):
         club.save()
         created = False
     else:
-        club = Club.objects.create(name=name, **fields)
+        club = Club.objects.create(name=name,slug=slug,competition_id=competition_id)
         created = True
 
     return club, created
@@ -92,7 +92,7 @@ def club_parse(competition_id):
             base_path = os.getenv('base_path_club')
             club_path = os.path.join(base_path, slug)
             os.makedirs(club_path, exist_ok=True)
-            file_name = f'{name_en}.{file_type}'
+            file_name = f'logo.{file_type}'
             file_path = os.path.join(club_path, file_name)
             if os.path.exists(file_path):
                 print(f'Image for {name_en} already exists in relative_path:{file_path}')
@@ -101,13 +101,14 @@ def club_parse(competition_id):
                     f.write(logo_response)
                 print(f'Image for {name_en} saved in {file_path}')
 
-            best_path=os.getenv('best_path')
-            logo_path = os.path.join(best_path, f'{slug}/{name_en}.{file_type}')
+
+            logo_path = os.path.join( f'/club/{slug}/logo.{file_type}')
             print(logo_path)
 
-            form_img = os.path.join(f'{best_path}{slug}/App.png')
+            form_img = os.path.join(f'/club/{slug}/app.png')
 
             print(form_img)
+
 
             # with open(club_path, 'wb') as f:
             #     f.write(logo_response)
@@ -120,7 +121,7 @@ def club_parse(competition_id):
         club, created = update_or_create_club(
             name=name_en,
             competition_name=competition.name,
-            flag_url=logo_path,
+            logo_img=logo_path,
             country_id=competition.country_id,
             name_ru=name_ru,
             club_link=club_link,

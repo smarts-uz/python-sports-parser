@@ -22,29 +22,7 @@ from orm.db.models import Player, Club
 # Base paths for saving player and club HTML files
 base_path_player = os.getenv('base_path_player')
 
-# def update_or_create_player(name, slug, **fields):
-#     """O'yinchini yangilash yoki yaratish."""
-#     players = Player.objects.filter(name=name, slug=slug)
-#
-#     if players.count() > 1:
-#         print(f"Multiple players found for {name}. Please check the data.")
-#         return None, False
-#
-#     if players.exists():
-#         player = players.first()
-#         for field, value in fields.items():
-#             setattr(player, field, value)
-#         player.save()
-#         print(f"Updated player: {name} (Slug: {slug})")
-#         created = False
-#     else:
-#         player = Player.objects.create(name=name, slug=slug, **fields)
-#         print(f"Created new player: {name} (Slug: {slug})")
-#         created = True
-#
-#     return player, created
-
-def parse_players(competition_id):
+def parse_player_main(competition_id):
     """Berilgan competition_id orqali o'yinchilarni parslash."""
     clubs = Club.objects.filter(competition_id=competition_id)
     if not clubs.exists():
@@ -80,7 +58,7 @@ def parse_players(competition_id):
             name_en = GoogleTranslator(source='auto', target='en').translate(name)
             number = row.find('td').get_text(strip=True) or '0'
 
-            player=Player.objects.filter(slug=slug,competition_id=competition_id)
+            player=Player.objects.filter(slug=slug,competition_id=competition_id).first()
             if player:
                 # Updating the players main data
                 player.name=name_en

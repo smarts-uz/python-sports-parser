@@ -20,7 +20,8 @@ from orm.db.models import Competition, Club  # Club modelini import qildik
 # Calling cmd functions
 from cmd_lines.competition import save_club_htmls_by_competition_id
 from cmd_lines.Club import club_parse
-from cmd_lines.players_main import parse_players
+from cmd_lines.players_main import parse_player_main
+from cmd_lines.player_all import parse_player_all
 
 @click.group()
 def main():
@@ -47,13 +48,24 @@ def club(competition_id):
 @click.command()
 @click.argument('competition_id', type=int)
 def player(competition_id):
-    parse_players(competition_id)
+    parse_player_main(competition_id)
     print(f"Players parsed for competition ID: {competition_id}")
+
+
+@click.command()
+@click.argument('competition_id', type=int)
+def player_all(competition_id):
+    parse_player_all(competition_id)
+    print(f"Players All parsed for competition ID: {competition_id}")
+
+
+
 
 # Adding commands to the main group
 main.add_command(competition)
 main.add_command(club)
 main.add_command(player)
+main.add_command(player_all)
 
 if __name__ == '__main__':
     main()
