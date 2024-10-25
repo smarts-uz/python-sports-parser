@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from django.utils import timezone
+import time
 
 # Django specific settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orm.settings')
@@ -20,7 +21,7 @@ def update_or_create_player(name, slug, club_id, player_link, **fields):
         club = Club.objects.get(id=club_id)
 
         # O'yinchini club_id, name va slug bo'yicha qidiramiz
-        players = Player.objects.filter(name=name, slug=slug, club=club)
+        players = Player.objects.filter(name=name, slug=slug, club=club,player_link=player_link)
 
         if players.count() > 1:
             print(f"Multiple players found for {name} in club {club_id}. Please check the data.")
@@ -117,3 +118,4 @@ def parse_player_all(competition_id):
                 print(f'Updated: {name_en}, Slug: {slug}, Club ID: {club.id}, Link: {player_link}')
 
             create_player_image(player)
+            time.sleep(1)

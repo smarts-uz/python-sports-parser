@@ -58,7 +58,7 @@ def parse_player_main(competition_id):
             name_en = GoogleTranslator(source='auto', target='en').translate(name)
             number = row.find('td').get_text(strip=True) or '0'
 
-            player=Player.objects.filter(slug=slug,competition_id=competition_id).first()
+            player=Player.objects.filter(slug=slug,name=name_en,competition_id=competition_id,player_link=player_link).first()
             if player:
                 # Updating the players main data
                 player.name=name_en
