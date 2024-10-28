@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
-
 # Load environment variables
 load_dotenv()
 
@@ -53,15 +52,15 @@ def download_player_image(player_image_url, player_name, player_slug, base_path_
         file_extension = os.path.splitext(parsed_url.path)[1]  # Fayl kengaytmasini olamiz
 
         # Fayl nomini futbolchining to'liq ismi bo'yicha yaratamiz
-        file_name = f"app{file_extension}"  # Fayl nomi: "Arsen Zakharyan.png"
+        file_name = f"app{file_extension}"  # Fayl nomi: "Arsen_Zakharyan.png"
 
         # Rasmni saqlash uchun slug nomiga asoslangan papkani yaratamiz
-        player_folder = os.path.join(base_path_player,player_slug)
+        player_folder = os.path.join(base_path_player, player_slug)
 
         os.makedirs(player_folder, exist_ok=True)
         full_image_path = os.path.join(player_folder, file_name)
         if os.path.exists(full_image_path):
-            print(f"image {file_name} already downloaded this path: {full_image_path}")
+            print(f"Image {file_name} already downloaded at this path: {full_image_path}")
 
         else:
             # Rasm faylini saqlash
@@ -71,7 +70,7 @@ def download_player_image(player_image_url, player_name, player_slug, base_path_
             print(f"Image successfully downloaded: {full_image_path}")
 
         # Nisbiy manzilni yaratamiz
-        relative_image_path = os.path.join(f'/player/{player_slug}/{file_name}')
+        relative_image_path = os.path.join('player', player_slug, file_name)
 
         print(f"Relative image path: {relative_image_path}")
         return relative_image_path
@@ -94,10 +93,19 @@ def create_player_image(player):
             player.save()
             print(f"Player image created: {player.name} with player_image: {player.image}")
     else:
-        print(f"Image not found for player: {player.name} {player.club_id} with {player.player_link}")
-    # Agar image maydoni null bo'lsa, davom etamiz
+        print(f"Image not found for player: {player.name} (Club ID: {player.club_id}) with link {player.player_link}")
 
 
-
-    # else:
-    #     print(f"Player {player.name} already has an image. Skipping... with player image path {player.image} in {player.club_id} with {player.player_link}")
+# def update_players_images_by_competition(competition_id):
+#     players = Player.objects.filter(competition_id=competition_id)
+#
+#     if not players.exists():
+#         print(f"No players found for competition ID: {competition_id}")
+#         return
+#
+#     for player in players:
+#         create_player_image(player)
+#         print(f"Processed image for player: {player.name}")
+#
+# # Misol uchun, 3-raqamli competition_id bo'yicha barcha o'yinchilarning rasmlarini yangilash uchun:
+# update_players_images_by_competition(4)
