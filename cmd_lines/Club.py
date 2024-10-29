@@ -102,18 +102,12 @@ def club_parse(competition_id):
                 print(f'Image for {name_en} saved in {file_path}')
 
 
-            logo_path = os.path.join( f'/club/{slug}/logo.{file_type}')
+            logo_path = os.path.join( f'club\\{slug}\\logo.{file_type}')
             print(logo_path)
 
-            form_img = os.path.join(f'/club/{slug}/app.png')
+            form_img = os.path.join(f'club\\{slug}\\app.png')
 
             print(form_img)
-
-
-            # with open(club_path, 'wb') as f:
-            #     f.write(logo_response)
-            #
-            # print(f'{name_en}')
 
 
 

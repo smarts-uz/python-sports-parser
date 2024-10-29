@@ -96,16 +96,15 @@ def create_player_image(player):
         print(f"Image not found for player: {player.name} (Club ID: {player.club_id}) with link {player.player_link}")
 
 
-# def update_players_images_by_competition(competition_id):
-#     players = Player.objects.filter(competition_id=competition_id)
-#
-#     if not players.exists():
-#         print(f"No players found for competition ID: {competition_id}")
-#         return
-#
-#     for player in players:
-#         create_player_image(player)
-#         print(f"Processed image for player: {player.name}")
-#
-# # Misol uchun, 3-raqamli competition_id bo'yicha barcha o'yinchilarning rasmlarini yangilash uchun:
-# update_players_images_by_competition(4)
+def update_players_images_by_competition(competition_id):
+    players = Player.objects.filter(competition_id=competition_id)
+
+    if not players.exists():
+        print(f"No players found for competition ID: {competition_id}")
+        return
+
+    for player in players:
+        create_player_image(player)
+        print(f"Processed image for player: {player.name}")
+
+

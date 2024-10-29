@@ -71,19 +71,19 @@ def parse_player_main(competition_id):
                 player.updated_at=timezone.now()
                 player.save()
                 print(f"Updated existings Player:{player.name} id:{player.id} with link:{player_link}")
-            else:
-                # Creating new found playerss
-                player=Player.objects.create(
-                    name=name_en,
-                    shirt_number=number,
-                    club_id=club.id,
-                    name_ru=name,
-                    player_link=player_link,
-                    slug=slug,
-                    competition_id=competition_id,
-                    created_at=timezone.now(),
-                )
-                print(f"Created new Player:{player.name} id:{player.id} with link:{player_link}")
+            # else:
+            #     # Creating new found playerss
+            #     player=Player.objects.create(
+            #         name=name_en,
+            #         shirt_number=number,
+            #         club_id=club.id,
+            #         name_ru=name,
+            #         player_link=player_link,
+            #         slug=slug,
+            #         competition_id=competition_id,
+            #         created_at=timezone.now(),
+            #     )
+            #     print(f"Created new Player:{player.name} id:{player.id} with link:{player_link}")
 
             player_foldr_path=os.path.join(base_path_player,slug)
             os.makedirs(player_foldr_path, exist_ok=True)

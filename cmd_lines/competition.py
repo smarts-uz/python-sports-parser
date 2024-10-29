@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import django
+import  time
 
 from deep_translator import GoogleTranslator
 from django.utils import timezone  # timezone ni import qiling
@@ -43,11 +44,14 @@ def save_club_htmls_by_competition_id(competition_id):
             # Har bir klub uchun HTMLni saqlash va bazaga kiritish
             for club in clubs:
                 link_tag = club.find('a')
+
                 if link_tag:
                     club_name = link_tag.text.strip()
                     print(club_name)# Klub nomini olish
                     club_slug = link_tag['href'].split('/')[-2]  # Klub slugini olish
                     club_link = link_tag['href']
+
+
                     # Klub havolasini olish
 
                     # Klub nomini ingliz tiliga tarjima qilish
@@ -58,7 +62,7 @@ def save_club_htmls_by_competition_id(competition_id):
                         # Update club if it exists
                         club.name = club_name_en
                         club.name_ru = club_name
-                        club.club_link = club_link
+                        # club.club_link = club_link
                         club.updated_at = timezone.now()
                         club.save()
                         print(f"Updated existing Club: {club.name} with ID {club.id} - link {club_link}")
@@ -81,11 +85,17 @@ def save_club_htmls_by_competition_id(competition_id):
 
                     html_file_path = os.path.join(club_folder_path,'app.html')  # Tarjima qilingan nomi bilan saqlash
                     # htmls downloader functions
-                    html_downloader(club_name_en,club_link,html_file_path)
+                    # print(club.club_link)
+                    # html_downloader(club_name_en,club.club_link,html_file_path)  #for the competition_id 2
+                    html_downloader(club_name_en,club_link, html_file_path)
         else:
             print("Competition page could not be retrieved.")
 
     except Competition.DoesNotExist:
         print(f"Competition with id {competition_id} does not exist.")
     except Exception as e:
+
         print(f"An error occurred: {e}")
+    time.sleep(1)
+
+
