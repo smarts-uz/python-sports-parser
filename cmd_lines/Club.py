@@ -7,9 +7,6 @@ from deep_translator import GoogleTranslator
 from django.utils import timezone
 
 
-from monolithh.monolith_htmls import html_downloader
-
-
 # Load environment variables
 load_dotenv()
 

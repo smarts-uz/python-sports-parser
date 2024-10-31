@@ -1,6 +1,6 @@
 import os
 import django
-import requests
+
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from deep_translator import GoogleTranslator
@@ -114,4 +114,4 @@ def club_parse(competition_id):
 
 
 # Run the parsing function for a specific competition ID
-club_parse(competition_id=2)  # Replace with the desired competition ID
+# club_parse(competition_id=2)  # Replace with the desired copetition ID
