@@ -29,7 +29,7 @@ This command, given an competition ID, will parse all Club Players of that ID fr
 python main.py competition 1
 python main.py club 1
 python main.py player 1
-python main.py player_all 1
+python main.py player-all 1
 ```
 Example:  "py main.py club 1 "
 
